@@ -40,7 +40,7 @@
 -protocol({xep, 248, '0.2'}).
 
 -include("logger.hrl").
--include("xmpp.hrl").
+-include_lib("xmpp/include/xmpp.hrl").
 -include("pubsub.hrl").
 -include("mod_roster.hrl").
 -include("translate.hrl").
@@ -4232,8 +4232,8 @@ mod_doc() ->
 		  ?T("This option defines the Jabber IDs of the service. "
 		     "If the 'hosts' option is not specified, the only Jabber "
 		     "ID will be the hostname of the virtual host with the "
-		     "prefix \"vjud.\". The keyword '@HOST@' is replaced with "
-		     "the real virtual host name.")}},
+		     "prefix \"pubsub.\". The keyword '@HOST@' is replaced "
+		     "with the real virtual host name.")}},
 	   {ignore_pep_from_offline,
 	    #{value => "false | true",
 	      desc =>
@@ -4294,26 +4294,22 @@ mod_doc() ->
 		      "nodes will have the default configuration, and this "
 		      "can not be changed. Using 'virtual' nodetree requires "
 		      "to start from a clean database, it will not work if "
-		      "you used the default 'tree' nodetree before."),
-		   ?T("- 'dag' nodetree provides experimental support for "
-		      "PubSub Collection Nodes (XEP-0248). In that case you "
-		      "should also add 'dag' node plugin as default, for "
-		      "example: 'plugins: [flat,pep]'")]}},
+		      "you used the default 'tree' nodetree before.")]}},
 	   {pep_mapping,
 	    #{value => "List of Key:Value",
 	      desc =>
 		  ?T("This allows to define a list of key-value to choose "
-		     "defined node plugins on given PEP namespace."),
+		     "defined node plugins on given PEP namespace. "
+		     "The following example will use 'node_tune' instead of "
+		     "'node_pep' for every PEP node with the tune namespace:"),
 	      example =>
-		  [{?T("The following example will use 'node_tune' instead of "
-		       "'node_pep' for every PEP node with the tune namespace:"),
 		    ["modules:",
 		     "  ...",
 		     "  mod_pubsub:",
 		     "    pep_mapping:",
 		     "      http://jabber.org/protocol/tune: tune",
 		     "  ..."]
-		   }]}},
+		   }},
 	   {plugins,
 	    #{value => "[Plugin, ...]",
 	      desc => [?T("To specify which pubsub node plugins to use. "

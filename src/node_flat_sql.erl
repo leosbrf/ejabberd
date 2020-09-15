@@ -35,7 +35,7 @@
 
 
 -include("pubsub.hrl").
--include("xmpp.hrl").
+-include_lib("xmpp/include/xmpp.hrl").
 -include("ejabberd_sql_pt.hrl").
 -include("translate.hrl").
 
@@ -897,12 +897,12 @@ select_affiliation_subscriptions(Nidx, GenKey, SubKey) ->
     GJ = encode_jid(GenKey),
     SJ = encode_jid(SubKey),
     case catch ejabberd_sql:sql_query_t(
-	?SQL("select jid = %(GJ)s as @(G)b, @(affiliation)s, @(subscriptions)s from "
+	?SQL("select @(jid)s, @(affiliation)s, @(subscriptions)s from "
 	     " pubsub_state where nodeid=%(Nidx)d and jid in (%(GJ)s, %(SJ)s)"))
     of
 	{selected, Res} ->
 	    lists:foldr(
-		fun({true, A, S}, {_, Subs}) ->
+		fun({Jid, A, S}, {_, Subs}) when Jid == GJ ->
 		    {decode_affiliation(A), Subs ++ decode_subscriptions(S)};
 		   ({_, _, S}, {Aff, Subs}) ->
 		       {Aff, Subs ++ decode_subscriptions(S)}

@@ -3,7 +3,7 @@ defmodule Ejabberd.Mixfile do
 
   def project do
     [app: :ejabberd,
-     version: "20.3.0",
+     version: "20.7.0",
      description: description(),
      elixir: "~> 1.4",
      elixirc_paths: ["lib"],
@@ -66,7 +66,10 @@ defmodule Ejabberd.Mixfile do
              cond_options() ++
              Enum.map(includes, fn (path) -> {:i, path} end) ++
              if_version_above('20', [{:d, :DEPRECATED_GET_STACKTRACE}]) ++
+             if_version_below('21', [{:d, :USE_OLD_HTTP_URI}]) ++
              if_version_below('22', [{:d, :LAGER}]) ++
+             if_version_below('23', [{:d, :USE_OLD_CRYPTO_HMAC}]) ++
+             if_version_below('23', [{:d, :USE_OLD_PG2}]) ++
              if_function_exported(:erl_error, :format_exception, 6, [{:d, :HAVE_ERL_ERROR}])
     defines = for {:d, value} <- result, do: {:d, value}
     result ++ [{:d, :ALL_DEFS, defines}]
@@ -85,17 +88,17 @@ defmodule Ejabberd.Mixfile do
     [{:lager, "~> 3.6.0"},
      {:p1_utils, "~> 1.0"},
      {:fast_xml, "~> 1.1"},
-     {:xmpp, "~> 1.4"},
+     {:xmpp, ">= 1.4.6"},
      {:cache_tab, "~> 1.0"},
      {:stringprep, "~> 1.0"},
      {:fast_yaml, "~> 1.0"},
      {:fast_tls, "~> 1.1"},
-     {:stun, "~> 1.0"},
-     {:esip, "~> 1.0"},
+     {:stun, "~> 1.0.34"},
+     {:esip, "~> 1.0.32"},
      {:p1_mysql, "~> 1.0"},
      {:mqtree, "~> 1.0"},
      {:p1_pgsql, "~> 1.1"},
-     {:jiffy, "~> 1.0"},
+     {:jiffy, "~> 1.0.4"},
      {:p1_oauth2, "~> 0.6.1"},
      {:distillery, "~> 2.0"},
      {:pkix, "~> 1.0"},
@@ -142,7 +145,7 @@ defmodule Ejabberd.Mixfile do
 
   defp package do
     [# These are the default files included in the package
-      files: ["lib", "src", "priv", "mix.exs", "include", "README.md", "COPYING"],
+      files: ["lib", "src", "priv", "mix.exs", "include", "README.md", "COPYING", "rebar.config", "rebar.config.script"],
       maintainers: ["ProcessOne"],
       licenses: ["GPLv2"],
       links: %{"Site" => "https://www.ejabberd.im",

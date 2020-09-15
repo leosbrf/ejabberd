@@ -43,7 +43,7 @@
 
 -include("logger.hrl").
 
--include("xmpp.hrl").
+-include_lib("xmpp/include/xmpp.hrl").
 
 -include("mod_roster.hrl").
 
@@ -448,7 +448,7 @@ delete_group(Host, Group) ->
 get_group_opts(Host1, Group1) ->
     {Host, Group} = split_grouphost(Host1, Group1),
     Mod = gen_mod:db_mod(Host, ?MODULE),
-    case use_cache(Mod, Host) of
+    Res = case use_cache(Mod, Host) of
 	true ->
 	    ets_cache:lookup(
 		?GROUP_OPTS_CACHE, {Host, Group},
@@ -460,12 +460,17 @@ get_group_opts(Host1, Group1) ->
 		end);
 	false ->
 	    Mod:get_group_opts(Host, Group)
+    end,
+    case Res of
+        {ok, Opts} -> Opts;
+        error -> error
     end.
 
 set_group_opts(Host, Group, Opts) ->
     Mod = gen_mod:db_mod(Host, ?MODULE),
     case use_cache(Mod, Host) of
 	true ->
+	    ets_cache:delete(?GROUP_OPTS_CACHE, {Host, Group}, cache_nodes(Mod, Host)),
 	    ets_cache:insert(?GROUP_OPTS_CACHE, {Host, Group}, Opts, cache_nodes(Mod, Host)),
 	    ets_cache:clear(?SPECIAL_GROUPS_CACHE, cache_nodes(Mod, Host));
 	_ ->
@@ -930,7 +935,7 @@ list_shared_roster_groups(Host, Query, Lang) ->
 	[?XAE(<<"form">>,
 	      [{<<"action">>, <<"">>}, {<<"method">>, <<"post">>}],
 	      [FGroups, ?BR,
-	       ?INPUTT(<<"submit">>, <<"delete">>,
+	       ?INPUTTD(<<"submit">>, <<"delete">>,
 		       ?T("Delete Selected"))])].
 
 list_sr_groups_parse_query(Host, Query) ->
@@ -997,7 +1002,7 @@ shared_roster_group(Host, Group, Query, Lang) ->
 			     [?XCT(<<"td">>, ?T("Label:")),
 			      ?XE(<<"td">>,
 				  [?INPUT(<<"text">>, <<"label">>, Label)]),
-			      ?XE(<<"td">>, [?C(<<"Name in the rosters where this group will be displayed">>)])]),
+			      ?XE(<<"td">>, [?CT(?T("Name in the rosters where this group will be displayed"))])]),
 			 ?XE(<<"tr">>,
 			     [?XCT(<<"td">>, ?T("Description:")),
 			      ?XE(<<"td">>,
@@ -1005,7 +1010,7 @@ shared_roster_group(Host, Group, Query, Lang) ->
 					     integer_to_binary(lists:max([3,
                                                                                DescNL])),
 					     <<"20">>, Description)]),
-			      ?XE(<<"td">>, [?C(<<"Only admins can see this">>)])
+			      ?XE(<<"td">>, [?CT(?T("Only admins can see this"))])
 ]),
 			 ?XE(<<"tr">>,
 			     [?XCT(<<"td">>, ?T("Members:")),
@@ -1023,7 +1028,7 @@ shared_roster_group(Host, Group, Query, Lang) ->
 					     integer_to_binary(lists:max([3,											        length(FDisplayedGroups)])),
 					     <<"20">>,
 					     list_to_binary(FDisplayedGroups))]),
-			      ?XE(<<"td">>, [?C(<<"Groups that will be displayed to the members">>)])
+			      ?XE(<<"td">>, [?CT(?T("Groups that will be displayed to the members"))])
 ])])])),
     (?H1GL((translate:translate(Lang, ?T("Shared Roster Groups"))),
 	   <<"modules/#mod-shared-roster">>, <<"mod_shared_roster">>))

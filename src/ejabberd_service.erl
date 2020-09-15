@@ -35,7 +35,7 @@
 %% API
 -export([send/2, close/1, close/2, stop_async/1]).
 
--include("xmpp.hrl").
+-include_lib("xmpp/include/xmpp.hrl").
 -include("logger.hrl").
 -include("translate.hrl").
 
@@ -302,7 +302,7 @@ listen_options() ->
      {tls, false},
      {tls_compression, false},
      {max_stanza_size, infinity},
-     {max_fsm_queue, 5000},
+     {max_fsm_queue, 10000},
      {password, undefined},
      {hosts, []},
      {check_from, true},

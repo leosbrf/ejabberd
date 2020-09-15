@@ -110,7 +110,7 @@ doc() ->
                "Modules and other components (e.g. authentication) "
                "may have its own value. The default value is 'mnesia'.")}},
      {default_ram_db,
-      #{value => "mnesia | sql | redis",
+      #{value => "mnesia | redis | sql",
         desc =>
             ?T("Default volatile (in-memory) storage for ejabberd. "
                "Modules and other components (e.g. session management) "
@@ -253,7 +253,7 @@ doc() ->
      {acme,
       #{value => ?T("Options"),
         desc =>
-            ?T("ACME configuration. ACME is used to automatically "
+            ?T("http://../basic/#acme[ACME] configuration, to automatically "
                "obtain SSL certificates for the domains served by ejabberd, "
                "which means that certificate requests and renewals are "
                "performed to some CA server (aka \"ACME server\") in a fully "
@@ -386,11 +386,14 @@ doc() ->
      {c2s_cafile,
       #{value => ?T("Path"),
         desc =>
-            ?T("Full path to a file containing one or more CA certificates "
+            [?T("Full path to a file containing one or more CA certificates "
                "in PEM format. All client certificates should be signed by "
                "one of these root CA certificates and should contain the "
-               "corresponding JID(s) in subjectAltName field. "
-               "There is no default value.")}},
+               "corresponding JID(s) in 'subjectAltName' field. "
+               "There is no default value."), "",
+             ?T("You can use http://../toplevel/#host-config[host_config] to specify this option per-vhost."), "",
+             ?T("To set a specific file per listener, use the listener's http://../listen-options/#cafile[cafile] option. Please notice that 'c2s_cafile' overrides the listener's 'cafile' option."), ""
+            ]}},
      {c2s_ciphers,
       #{value => "[Cipher, ...]",
         desc =>
@@ -431,8 +434,10 @@ doc() ->
      {ca_file,
       #{value => ?T("Path"),
         desc =>
-            ?T("Path to a file of CA root certificates. "
-               "The default is to use system defined file if possible.")}},
+            [?T("Path to a file of CA root certificates. "
+               "The default is to use system defined file if possible."), "",
+             ?T("For server conections, this 'ca_file' option is overriden by the http://../toplevel/#s2s-cafile[s2s_cafile] option."), ""
+            ]}},
      {captcha_cmd,
       #{value => ?T("Path"),
         desc =>
@@ -485,7 +490,7 @@ doc() ->
         desc =>
             ?T("A list of Erlang nodes to connect on ejabberd startup. "
                "This option is mostly intended for ejabberd customization "
-               "and sofisticated setups. The default value is an empty list.")}},
+               "and sophisticated setups. The default value is an empty list.")}},
      {define_macro,
       #{value => "{MacroName: MacroValue}",
         desc =>
@@ -827,7 +832,7 @@ doc() ->
         desc =>
             {?T("Whether to use 'new' SQL schema. All schemas are located "
                 "at <https://github.com/processone/ejabberd/tree/~s/sql>. "
-                "There are two schemas available. The default lecacy schema "
+                "There are two schemas available. The default legacy schema "
                 "allows to store one XMPP domain into one ejabberd database. "
                 "The 'new' schema allows to handle several XMPP domains in a "
                 "single ejabberd database. Using this 'new' schema is best when "
@@ -1022,7 +1027,7 @@ doc() ->
             ?T("Same as 'cache_size', but applied to routing table cache "
                "only. If not set, the value from 'cache_size' will be used.")}},
      {router_db_type,
-      #{value => "mnesia | sql | redis",
+      #{value => "mnesia | redis | sql",
         desc =>
             ?T("Database backend to use for routing information. "
                "The default value is picked from 'default_ram_db' option, or "
@@ -1048,9 +1053,11 @@ doc() ->
      {s2s_cafile,
       #{value => ?T("Path"),
         desc =>
-            ?T("A path to a file with CA root certificates that will "
-               "be used to authenticate s2s connections. If not set "
-               "the value of 'ca_file' will be used.")}},
+            [?T("A path to a file with CA root certificates that will "
+               "be used to authenticate s2s connections. If not set, "
+               "the value of http://../toplevel/#ca-file[ca_file] will be used."), "",
+             ?T("You can use http://../toplevel/#host-config[host_config] to specify this option per-vhost."), ""
+            ]}},
      {s2s_ciphers,
       #{value => "[Cipher, ...]",
         desc =>
@@ -1182,7 +1189,7 @@ doc() ->
             ?T("Same as 'cache_size', but applied to client sessions table cache "
                "only. If not set, the value from 'cache_size' will be used.")}},
      {sm_db_type,
-      #{value => "mnesia | sql | redis",
+      #{value => "mnesia | redis | sql",
         desc =>
             ?T("Database backend to use for client sessions information. "
                "The default value is picked from 'default_ram_db' option, or "
@@ -1193,7 +1200,7 @@ doc() ->
             ?T("Same as 'use_cache', but applied to client sessions table cache "
                "only. If not set, the value from 'use_cache' will be used.")}},
      {sql_type,
-      #{value => "mysql | pgsql | sqlite | mssql | odbc",
+      #{value => "mssql | mysql | odbc | pgsql | sqlite",
         desc =>
             ?T("The type of an SQL connection. The default is 'odbc'.")}},
      {sql_connect_timeout,

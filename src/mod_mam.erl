@@ -44,7 +44,7 @@
 	 is_empty_for_user/2, is_empty_for_room/3, check_create_room/4,
 	 process_iq/3, store_mam_message/7, make_id/0, wrap_as_mucsub/2, select/7]).
 
--include("xmpp.hrl").
+-include_lib("xmpp/include/xmpp.hrl").
 -include("logger.hrl").
 -include("mod_muc_room.hrl").
 -include("ejabberd_commands.hrl").
@@ -1134,7 +1134,7 @@ select_with_mucsub_fallback(LServer, JidRequestor, JidArchive, Query, RSM, Flags
 			   _ ->
 			       []
 		       end,
-	    SubRoomJids = [Jid || {Jid, _} <- SubRooms],
+	    SubRoomJids = [Jid || {Jid, _, _} <- SubRooms],
 	    {E2, A2, C2} =
 		lists:foldl(
 		  fun(MucJid, {E0, A0, C0}) ->

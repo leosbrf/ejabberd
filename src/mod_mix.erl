@@ -41,7 +41,7 @@
 	 process_mam_query/1,
 	 process_pubsub_query/1]).
 
--include("xmpp.hrl").
+-include_lib("xmpp/include/xmpp.hrl").
 -include("logger.hrl").
 -include("translate.hrl").
 -include("ejabberd_stacktrace.hrl").
@@ -642,7 +642,7 @@ notify_participant_left(Mod, LServer, To, ID) ->
 -spec make_id(jid(), binary()) -> binary().
 make_id(JID, Key) ->
     Data = jid:encode(jid:tolower(jid:remove_resource(JID))),
-    xmpp_util:hex(crypto:hmac(sha256, Data, Key, 10)).
+    xmpp_util:hex(misc:crypto_hmac(sha256, Data, Key, 10)).
 
 %%%===================================================================
 %%% Error generators

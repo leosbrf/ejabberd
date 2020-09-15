@@ -54,7 +54,7 @@
 	 depends/2, set_item_and_notify_clients/3]).
 
 -include("logger.hrl").
--include("xmpp.hrl").
+-include_lib("xmpp/include/xmpp.hrl").
 -include("mod_roster.hrl").
 -include("ejabberd_http.hrl").
 -include("ejabberd_web_admin.hrl").
@@ -997,7 +997,7 @@ user_roster(User, Server, Query, Lang) ->
 						     ?XAE(<<"td">>,
 							  [{<<"class">>,
 							    <<"valign">>}],
-							  [?INPUTT(<<"submit">>,
+							  [?INPUTTD(<<"submit">>,
 								   <<"remove",
 								     (ejabberd_web_admin:term_to_id(R#roster.jid))/binary>>,
 								   ?T("Remove"))])])
@@ -1117,9 +1117,15 @@ user_roster_item_parse_query(User, Server, Items,
 us_to_list({User, Server}) ->
     jid:encode({User, Server, <<"">>}).
 
-webadmin_user(Acc, _User, _Server, Lang) ->
+webadmin_user(Acc, User, Server, Lang) ->
+    QueueLen = length(get_roster(jid:nodeprep(User), jid:nameprep(Server))),
+    FQueueLen = ?C(integer_to_binary(QueueLen)),
+    FQueueView = ?AC(<<"roster/">>, ?T("View Roster")),
     Acc ++
-      [?XE(<<"h3">>, [?ACT(<<"roster/">>, ?T("Roster"))])].
+        [?XCT(<<"h3">>, ?T("Roster:")),
+         FQueueLen,
+         ?C(<<"  |   ">>),
+         FQueueView].
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 -spec has_duplicated_groups([binary()]) -> boolean().

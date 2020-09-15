@@ -37,7 +37,7 @@
 -include("mod_roster.hrl").
 -include("mod_shared_roster.hrl").
 -include("logger.hrl").
--include("xmpp.hrl").
+-include_lib("xmpp/include/xmpp.hrl").
 
 %%%===================================================================
 %%% API
@@ -87,7 +87,7 @@ delete_group(Host, Group) ->
 
 get_group_opts(Host, Group) ->
     case catch mnesia:dirty_read(sr_group, {Group, Host}) of
-	[#sr_group{opts = Opts}] -> Opts;
+	[#sr_group{opts = Opts}] -> {ok, Opts};
 	_ -> error
     end.
 

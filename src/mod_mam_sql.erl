@@ -33,7 +33,7 @@
 	 is_empty_for_user/2, is_empty_for_room/3, select_with_mucsub/6]).
 
 -include_lib("stdlib/include/ms_transform.hrl").
--include("xmpp.hrl").
+-include_lib("xmpp/include/xmpp.hrl").
 -include("mod_mam.hrl").
 -include("logger.hrl").
 -include("ejabberd_sql_pt.hrl").
@@ -221,7 +221,7 @@ select_with_mucsub(LServer, JidRequestor, #jid{luser = LUser} = JidArchive,
 				   _ ->
 				       []
 			       end,
-		    [jid:encode(Jid) || {Jid, _} <- SubRooms]
+		    [jid:encode(Jid) || {Jid, _, _} <- SubRooms]
 	    end,
     {Query, CountQuery} = make_sql_query(LUser, LServer, MAMQuery, RSM, Extra),
     do_select_query(LServer, JidRequestor, JidArchive, RSM, chat, Query, CountQuery, Flags).
